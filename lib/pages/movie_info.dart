@@ -6,7 +6,16 @@ import '../utilities/constants.dart';
 import '../utilities/text_used.dart';
 
 class MovieInfo extends StatelessWidget {
-  const MovieInfo({Key? key}) : super(key: key);
+  const MovieInfo(
+      {Key? key,
+      required this.name,
+      required this.description,
+      required this.bannerUrl,
+      required this.vote,
+      required this.launchOn})
+      : super(key: key);
+
+  final String name, description, bannerUrl, vote, launchOn;
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +28,16 @@ class MovieInfo extends StatelessWidget {
                 borderRadius: BorderRadius.zero, // Image border
                 child: SizedBox.fromSize(
                   size: Size.copy(
-                    const Size(
-                      470.0,
+                    Size(
+                      MediaQuery.of(context).size.width,
                       310.5,
                     ),
                   ), // Image radius
-                  child:
-                      Image.asset('assets/images/ford2.png', fit: BoxFit.cover),
+                  child: Image.network(
+                    bannerUrl,
+                    fit: BoxFit.cover,
+                  ),
+                  //Image.asset('assets/images/ford2.png', fit: BoxFit.cover),
                 ),
               ),
               Column(
@@ -38,7 +50,10 @@ class MovieInfo extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: const Icon(Icons.arrow_back_ios),
+                        child: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.blueGrey,
+                        ),
                       ),
                     ),
                   ),
@@ -66,45 +81,55 @@ class MovieInfo extends StatelessWidget {
                                 width: 32.0,
                                 height: 32.0,
                               ),
-                              const SizedBox(height: 4.0,),
+                              const SizedBox(
+                                height: 4.0,
+                              ),
                               Row(
-                                children: const[
+                                children: [
                                   Text(
-                                    '8.2',
+                                    '$vote/',
                                     style: kText8,
                                   ),
-                                  Text(
-                                    '/10',
+                                  const Text(
+                                    '10',
                                     style: kText11,
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 2.0,),
+                              const SizedBox(
+                                height: 2.0,
+                              ),
                               const Text(
                                 '150,212',
                                 style: kText12,
                               ),
                             ],
                           ),
-                         const SizedBox(width: 52.0,),
+                          const SizedBox(
+                            width: 52.0,
+                          ),
                           Column(
                             children: [
                               InkResponse(
-                                onTap: (){},
+                                onTap: () {},
                                 child: Image.asset(
                                   'assets/icons/star.png',
                                   width: 32.0,
                                   height: 32.0,
                                 ),
                               ),
-                              const SizedBox(height: 4.0,),
+                              const SizedBox(
+                                height: 4.0,
+                              ),
                               const Text(
                                 'Rate This',
                                 style: kText8,
                               ),
                             ],
                           ),
-                          const SizedBox(width: 30.0,),
+                          const SizedBox(
+                            width: 30.0,
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Column(
@@ -122,12 +147,16 @@ class MovieInfo extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 9.0,),
+                                const SizedBox(
+                                  height: 9.0,
+                                ),
                                 const Text(
                                   'Metascore',
                                   style: kText8,
                                 ),
-                                const SizedBox(height: 2.0,),
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
                                 const Text(
                                   '62 critic reviews',
                                   style: kText12,
@@ -154,36 +183,38 @@ class MovieInfo extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Ford v Ferrari',
-                                style: kText1,
-                              ),
-                              Row(
-                                children: const [
-                                  Text(
-                                    '2019',
-                                    style: kText10,
-                                  ),
-                                  SizedBox(
-                                    width: 28.0,
-                                  ),
-                                  Text(
-                                    'PG-13',
-                                    style: kText10,
-                                  ),
-                                  SizedBox(
-                                    width: 24.0,
-                                  ),
-                                  Text(
-                                    '2h 32min',
-                                    style: kText10,
-                                  ),
-                                ],
-                              ),
-                            ],
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  style: kText1,
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      launchOn,
+                                      style: kText10,
+                                    ),
+                                    const SizedBox(
+                                      width: 28.0,
+                                    ),
+                                    const Text(
+                                      'PG-13',
+                                      style: kText10,
+                                    ),
+                                    const SizedBox(
+                                      width: 24.0,
+                                    ),
+                                    const Text(
+                                      '2h 32min',
+                                      style: kText10,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                           Image.asset(
                             'assets/icons/add.png',
@@ -214,10 +245,8 @@ class MovieInfo extends StatelessWidget {
                       const SizedBox(
                         height: 16.0,
                       ),
-                      const Text(
-                        'American car designer Carroll Shelby and driver '
-                        'Kn Miles battle corporate interference and the laws '
-                        'of physics to build a revolutionary race car for Ford in order.',
+                      Text(
+                        description,
                         style: kText6,
                       ),
                       const SizedBox(
@@ -234,7 +263,7 @@ class MovieInfo extends StatelessWidget {
                         children: const [
                           CastCrew(
                               image: 'assets/images/james.png',
-                              name: '  James \n Mangold',
+                              name: 'James \n Mangold',
                               role: 'Director'),
                           Spacer(),
                           CastCrew(

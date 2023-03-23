@@ -1,13 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:movie_app/model/animated_image.dart';
-import 'package:movie_app/services/movie_services.dart';
+import 'package:movie_app/model/trending.dart';
 import 'package:movie_app/utilities/constants.dart';
 import 'package:movie_app/utilities/text_used.dart';
+import 'package:tmdb_api/tmdb_api.dart';
 
 import '../utilities/colors.dart';
-import 'movie_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -17,16 +16,56 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  List trendingMovies = [];
+  // List inTheater = [];
+  // List boxOffice = [];
+  // List comingSoon = [];
+  // List action = [];
+  // List crime = [];
+  // List comedy = [];
+  // List drama = [];
+
+  final String apiKey = '1e85a4ab93e11d7ee0fc13592e2939bc';
+  final String readAccessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZTg1YTRhYjkzZTExZDdlZTBmYzEzNTkyZTI5MzliYyIsInN1YiI6IjY0MTgzZDM5NTY5MGI1MDBkNDAxZDdmNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BF8omNkDz2VRkjonwoA48EHyrTCtwL-R-DqD6084FbI';
+
   late PageController _pageController;
   final int _currentPage = 0;
 
-  // List<AnimatedImage>? movies;
-  // var isLoaded = false;
+
+  loadMovies() async {
+    TMDB tmdbWithCustomLogs = TMDB(ApiKeys(apiKey, readAccessToken),
+        logConfig: const ConfigLogger(
+          showLogs: true,
+          showErrorLogs: true,
+        ));
+
+    Map trendingResult = await tmdbWithCustomLogs.v3.trending.getTrending();
+    // Map inTheaterResult = await tmdbWithCustomLogs.v3.movies.getLatest();
+    // Map boxOfficeResult = await tmdbWithCustomLogs.v3.movies.getPopular();
+    // Map comingSoonResult = await tmdbWithCustomLogs.v3.movies.getUpcoming();
+    // Map actionResult = await tmdbWithCustomLogs.v3.genres.getMovieList(language: 'Action');
+    // Map crimeResult = await tmdbWithCustomLogs.v3.genres.getMovieList(language: 'Crime');
+    // Map comedyResult = await tmdbWithCustomLogs.v3.genres.getMovieList(language: 'Comedy');
+    // Map dramaResult = await tmdbWithCustomLogs.v3.genres.getMovieList(language: 'Drama');
+
+    setState(() {
+      trendingMovies = trendingResult['results'];
+      // inTheater = inTheaterResult['results'];
+      // boxOffice = boxOfficeResult['results'];
+      // comingSoon = comingSoonResult['results'];
+      // action = actionResult['results'];
+      // crime = crimeResult['results'];
+      // comedy = comedyResult['results'];
+      // drama = dramaResult['results'];
+    });
+    //print(trendingMovies);
+  }
 
   @override
   void initState() {
     super.initState();
-    //getMovie();
+    loadMovies();
     _pageController =
         PageController(initialPage: _currentPage, viewportFraction: 0.8);
   }
@@ -36,17 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
     _pageController.dispose();
   }
-
-  // getMovie() async {
-  //   movies = await MovieService().getMovies();
-  //   if (movies != null) {
-  //     setState(
-  //           () {
-  //         isLoaded = true;
-  //       },
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -125,14 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 458.92,
                       child: AspectRatio(
                         aspectRatio: 0.85,
-                        child: PageView.builder(
-                          itemCount: animatedList.length,
-                          physics: const ClampingScrollPhysics(),
-                          controller: _pageController,
-                          itemBuilder: (context, index) {
-                            return carouselView(index);
-                          },
-                        ),
+                        child: TrendingMovies(trendingMovies),
+                        // PageView.builder(
+                        //   itemCount: trendingMovies.length,
+                        //   physics: const ClampingScrollPhysics(),
+                        //   controller: _pageController,
+                        //   itemBuilder: (context, index) => carouselView(index),
+                        // ),
                       ),
                     ),
                     const SizedBox(
@@ -159,76 +186,10 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         return Transform.rotate(
           angle: pi * value,
-          child: carouselCard(
-            animatedList[index],
-          ),
+          child: TrendingMovies(trendingMovies),
         );
       },
     );
   }
-
-  Widget carouselCard(AnimatedImage animatedImage) {
-    return Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MovieInfo(),
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30.0),
-                  image: DecorationImage(
-                    image: AssetImage(
-                      animatedImage.image,
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      offset: Offset(0, 4),
-                      blurRadius: 4,
-                      color: Colors.black26,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Text(
-          animatedImage.title,
-          style: kText1,
-        ),
-        const SizedBox(
-          height: 9.0,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/icons/filled_star.png',
-              width: 16.63,
-              height: 15.84,
-            ),
-            const SizedBox(
-              width: 9.6,
-            ),
-            Text(
-              animatedImage.rating,
-              style: kText3,
-            ),
-          ],
-        )
-      ],
-    );
-  }
 }
+
